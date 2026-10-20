@@ -1,15 +1,26 @@
-# Placeholder targets. Implement the real logic in the respective directories.
+.PHONY: install pipeline quality score test lint
 
-.PHONY: pipeline quality score
+# --- Environment (uv) ---
+install:
+	uv sync
 
+# --- Pipeline targets ---
 pipeline:
-	@echo "TODO: generate 50 Harbor bundles from count + seed"
-	@echo "Deterministic. Write to tasks/"
+	uv run python -m pipeline.generate --count 50 --seed 42
 
 quality:
-	@echo "TODO: run the six quality gates on generated tasks"
-	@echo "Write yield report and reject log to quality/"
+	uv run python -m quality.run_gates
 
 score:
-	@echo "TODO: score a submission against a bundle"
-	@echo "Usage: make score BUNDLE=tasks/foo SUBMISSION=path/to/scene.html"
+	uv run python -m reward.score $(BUNDLE) $(SUBMISSION)
+
+# --- Dev ---
+test:
+	uv run pytest
+
+lint:
+	uv run ruff check .
+
+# --- Helpers ---
+env-example:
+	@echo "Copy .env.example to .env and fill in values"
