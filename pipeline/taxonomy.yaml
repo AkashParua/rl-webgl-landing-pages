@@ -341,3 +341,62 @@ page_templates:
         children_slots: [headline, cta_button, secondary_button]
       - type: webgl_canvas
       - type: footer
+
+  - id: card_grid_explorer
+    description: Hero followed by an interactive card grid and a testimonial
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline, subheadline, cta_button]
+      - type: feature_section
+        children_slots: [card, card, card]
+      - type: testimonial
+      - type: footer
+
+  - id: gallery_focus
+    description: Minimal hero leading into a large interactive gallery
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline, subheadline]
+      - type: gallery
+      - type: feature_section
+      - type: footer
+
+  - id: control_heavy_demo
+    description: Product demo where the control panel is prominent and drives the WebGL scene
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline]
+      - type: showcase
+        children_slots: [webgl_canvas, control_panel]
+      - type: feature_section
+        children_slots: [text_block, icon_grid]
+      - type: footer
+
+  - id: story_scroll
+    description: Narrative-style page with alternating text and visual sections
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline, subheadline, background_effect]
+      - type: feature_section
+        children_slots: [text_block, webgl_canvas]
+      - type: feature_section
+        children_slots: [webgl_canvas, text_block]
+      - type: testimonial
+      - type: footer
+
+  - id: minimal_luxury
+    description: Sparse, high-end layout with a single strong WebGL focal point
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline, cta_button, webgl_canvas]
+      - type: footer
