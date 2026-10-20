@@ -1,4 +1,9 @@
-"""Seeded hierarchical sampler for ConstraintSpec."""
+"""Seeded hierarchical sampler for ConstraintSpec.
+
+Generates deterministic task specifications from a taxonomy definition
+and an integer seed. The same seed always produces the identical
+component tree and attribute values.
+"""
 
 import random
 from pathlib import Path
@@ -8,10 +13,30 @@ from .models import ComponentSpec, ConstraintSpec
 TAXONOMY_PATH = Path(__file__).parent / "taxonomy.yaml"
 
 def load_taxonomy(path: Path = TAXONOMY_PATH) -> dict:
+    """Load the taxonomy definition from YAML.
+
+    Args:
+        path: Path to the taxonomy YAML file. Defaults to taxonomy.yaml
+            next to this module.
+
+    Returns:
+        Parsed taxonomy dictionary containing component_types,
+        global_attributes, and page_templates.
+    """
     with open(path) as f:
         return yaml.safe_load(f)
 
 def _sample_attributes(rng: random.Random, attr_def: dict) -> dict:
+    """Sample one value for each attribute from its list of choices.
+
+    Args:
+        rng: Seeded random number generator.
+        attr_def: Mapping of attribute name to list of allowed values.
+
+    Returns:
+        Dictionary of sampled attribute values. Attributes whose value
+        is not a non-empty list are skipped.
+    """
     sampled = {}
     for key, choices in attr_def.items():
         if isinstance(choices, list) and choices:
@@ -24,6 +49,19 @@ def _build_component(
     taxonomy: dict,
     children_slots: list[str] | None = None,
 ) -> ComponentSpec:
+    """Recursively build a component and its children.
+
+    Args:
+        rng: Seeded random number generator.
+        comp_type: Component type name (must exist in taxonomy).
+        taxonomy: Full taxonomy dictionary.
+        children_slots: Optional list of child component type names to
+            instantiate under this component.
+
+    Returns:
+        A fully populated ComponentSpec with sampled attributes and
+        recursively built children.
+    """
     comp_def = taxonomy["component_types"].get(comp_type, {})
     attributes = _sample_attributes(rng, comp_def.get("attributes", {}))
 
@@ -35,7 +73,18 @@ def _build_component(
     return ComponentSpec(type=comp_type, attributes=attributes, children=children)
 
 def sample_spec(seed: int, taxonomy: dict | None = None) -> ConstraintSpec:
-    """Generate a deterministic ConstraintSpec from a seed."""
+    """Generate a deterministic ConstraintSpec from a seed.
+
+    Args:
+        seed: Integer seed controlling all random choices. The same seed
+            always yields the identical specification.
+        taxonomy: Optional pre-loaded taxonomy dict. If None, the default
+            taxonomy.yaml is loaded.
+
+    Returns:
+        A ConstraintSpec containing global attributes and a tree of
+        components matching one of the page templates.
+    """
     if taxonomy is None:
         taxonomy = load_taxonomy()
 
