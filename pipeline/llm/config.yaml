@@ -1,0 +1,15 @@
+# Non-secret defaults. Secrets and active provider come from environment variables.
+
+default_provider: ollama
+
+ollama:
+  model: qwen3.5:4b
+  base_url: http://localhost:11434
+  temperature: 0.7
+  max_tokens: 512
+
+openai_compatible:
+  model: gpt-4o-mini
+  temperature: 0.7
+  max_tokens: 512
+  # base_url and api_key must come from env (LLM_BASE_URL, LLM_API_KEY)
