@@ -282,23 +282,99 @@ global_attributes:
     - technical-precise
     - organic-natural
 
-  # Sets of text strings that must appear on the page
-  required_copy_sets:
-    - ["Aurora", "Discover the night"]
-    - ["Flow", "Move faster"]
-    - ["Lumen", "See clearly"]
-    - ["Nimbus", "Cloud, reimagined"]
-    - ["Vertex", "Precision in motion"]
-    - ["Halo", "Light that follows you"]
-    - ["Quartz", "Clarity engineered"]
-    - ["Drift", "Float above the noise"]
-
   # Performance / technical constraints the scene must respect
   performance_constraint:
     - 60fps-target
     - integrated-graphics-friendly
     - no-heavy-postprocessing
     - mobile-conscious
+
+# Topic-based required copy. Sampler picks a topic, then one text per
+# component type that actually appears in the generated tree.
+topics:
+  luxury-fragrance:
+    headline: ["Aurora", "Nocturne", "Éclat", "Vesper"]
+    subheadline: ["Discover the night", "A scent that lingers", "Elegance, distilled", "For evenings that matter"]
+    cta_button: ["Explore the collection", "Experience Aurora", "Shop the fragrance"]
+    secondary_button: ["View notes", "Learn the story"]
+    text_block: ["Crafted for those who notice the details.", "Rare ingredients, quietly composed."]
+
+  fintech-speed:
+    headline: ["Flow", "Velocity", "Pulse", "Swift"]
+    subheadline: ["Move faster", "Money that keeps up", "Instant by default", "Settle in seconds"]
+    cta_button: ["Get started", "Open account", "See it live"]
+    secondary_button: ["View pricing", "Talk to sales"]
+    text_block: ["Transfers that arrive before you finish the sentence."]
+
+  ai-writing:
+    headline: ["Lumen", "Quill", "Verse", "Draft"]
+    subheadline: ["See clearly", "Write without friction", "From idea to finished", "Your thoughts, refined"]
+    cta_button: ["Try Lumen", "Start writing", "Generate draft"]
+    secondary_button: ["See examples", "Watch demo"]
+    text_block: ["Blank page to polished prose in one flow."]
+
+  sustainable-fashion:
+    headline: ["Terra", "Rewoven", "Kindred", "Origin"]
+    subheadline: ["Worn with intention", "Materials that give back", "Style that lasts", "Traceable from fiber"]
+    cta_button: ["Shop the edit", "Discover Terra", "View lookbook"]
+    secondary_button: ["Our materials", "Impact report"]
+    text_block: ["Every piece carries the story of how it was made."]
+
+  indie-game:
+    headline: ["Drift", "Echo", "Rift", "Neon Hollow"]
+    subheadline: ["Fall into the unknown", "A world that remembers you", "Play beyond the edge"]
+    cta_button: ["Play now", "Wishlist", "Enter the rift"]
+    secondary_button: ["Watch trailer", "Join Discord"]
+    text_block: ["Handcrafted worlds. No two runs the same."]
+
+  productivity-tool:
+    headline: ["Focus", "Nimbus", "Clarity", "Anchor"]
+    subheadline: ["Work that flows", "Less noise, more done", "Your day, finally organized"]
+    cta_button: ["Start free", "Try Focus", "See the workspace"]
+    secondary_button: ["View templates", "Compare plans"]
+    text_block: ["One calm space for everything that matters."]
+
+  health-wellness:
+    headline: ["Halo", "Still", "Bloom", "Restore"]
+    subheadline: ["Feel like yourself again", "Small rituals, big shifts", "Wellness, simplified"]
+    cta_button: ["Begin today", "Explore programs", "Start free trial"]
+    secondary_button: ["Meet the guides", "Read stories"]
+    text_block: ["Science-backed practices designed for real life."]
+
+  electric-vehicle:
+    headline: ["Volt", "Apex", "Current", "Stride"]
+    subheadline: ["Drive the future", "Range without compromise", "Silence, powered"]
+    cta_button: ["Configure yours", "Book a drive", "See specs"]
+    secondary_button: ["Charging network", "Compare models"]
+    text_block: ["Performance and efficiency, finally in balance."]
+
+  design-tool:
+    headline: ["Canvas", "Forma", "Pixel", "Lattice"]
+    subheadline: ["Design at the speed of thought", "From sketch to system", "Collaborate in real time"]
+    cta_button: ["Start designing", "Try Canvas", "Open workspace"]
+    secondary_button: ["View gallery", "See plugins"]
+    text_block: ["Professional tools that stay out of your way."]
+
+  crypto-wallet:
+    headline: ["Vault", "Keystone", "Ledgerline", "Hold"]
+    subheadline: ["Your keys, your coins", "Security without friction", "One wallet for everything"]
+    cta_button: ["Create wallet", "Get started", "Secure your assets"]
+    secondary_button: ["Learn self-custody", "View supported chains"]
+    text_block: ["Institutional-grade security for everyone."]
+
+  travel-experience:
+    headline: ["Wander", "Atlas", "Roam", "Horizon"]
+    subheadline: ["Trips worth remembering", "Curated, not crowded", "Go further, stay present"]
+    cta_button: ["Plan a trip", "Explore destinations", "Start wandering"]
+    secondary_button: ["View guides", "See member stories"]
+    text_block: ["Handpicked stays and experiences, nowhere else."]
+
+  music-platform:
+    headline: ["Resonance", "Wave", "Echo", "Signal"]
+    subheadline: ["Sound, uninterrupted", "Discover what moves you", "Lossless, everywhere"]
+    cta_button: ["Start listening", "Try free", "Open the app"]
+    secondary_button: ["Browse genres", "See playlists"]
+    text_block: ["Every track in the quality it was meant to be heard."]
 
 page_templates:
   - id: classic_hero
