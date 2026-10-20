@@ -1,0 +1,189 @@
+# Exhaustive hierarchical taxonomy for WebGL landing page tasks
+# Components can nest; attributes are sampled per component.
+
+component_types:
+  page:
+    description: Root container
+    allowed_children: [hero, feature_section, showcase, gallery, testimonial, footer, nav]
+
+  nav:
+    description: Top navigation
+    attributes:
+      style: [minimal, floating, glassmorphic, bold]
+      hover_behavior: [underline, color-shift, scale, glow, none]
+      mobile_behavior: [hamburger, none]
+
+  hero:
+    description: Primary above-the-fold section
+    allowed_children: [headline, subheadline, cta_button, secondary_button, webgl_canvas, background_effect]
+    attributes:
+      layout: [centered, split-left, split-right, full-bleed]
+      vertical_align: [center, top, bottom]
+
+  headline:
+    description: Main title text
+    attributes:
+      text_style: [bold-sans, elegant-serif, mono, gradient-fill]
+      animation: [fade-in, slide-up, typewriter, letter-stagger, none]
+
+  subheadline:
+    description: Supporting line under headline
+    attributes:
+      animation: [fade-in-delayed, slide-up, none]
+
+  cta_button:
+    description: Primary call-to-action button (must be clickable and reactive)
+    attributes:
+      label_style: [solid, outline, gradient, glass]
+      hover_behavior: [scale-up, glow, color-shift, underline-sweep, particle-burst, magnetic]
+      click_behavior: [ripple, toggle-state, cycle-palette, spawn-element, trigger-animation, navigate-section]
+      right_click_behavior: [show-tooltip, reset, secondary-action, none]
+
+  secondary_button:
+    description: Secondary button
+    attributes:
+      hover_behavior: [opacity, underline, scale, none]
+      click_behavior: [scroll-to, open-modal-visual, none]
+
+  webgl_canvas:
+    description: Main WebGL / Three.js scene
+    attributes:
+      scene_type: [product-orbit, abstract-particles, geometric-morph, liquid-blob, floating-cards, terrain, crystal]
+      animation_style: [gentle-ambient-loop, triggered-burst, continuous-flow, physics-idle, staggered-reveal, morphing]
+      motion_budget: [minimal, gentle, dynamic, intense]
+      drag_behavior: [rotate-object, pan-camera, orbit-controls, scrub-timeline, none]
+      zoom_behavior: [dolly-camera, scale-focal, reveal-detail, none]
+      hover_behavior: [highlight-object, tooltip, slow-motion, none]
+      click_behavior: [select-object, explode-view, change-material, toggle-wireframe, none]
+      right_click_behavior: [reset-camera, context-visual, none]
+
+  background_effect:
+    description: Full-section background animation
+    attributes:
+      type: [gradient-shift, particle-field, noise-flow, grid, none]
+      intensity: [subtle, medium]
+
+  feature_section:
+    description: Content section below hero
+    allowed_children: [text_block, icon_grid, webgl_canvas, card]
+    attributes:
+      layout: [three-column, alternating, centered]
+
+  text_block:
+    description: Paragraph or feature description
+    attributes:
+      animation: [fade-in-on-scroll, none]
+
+  card:
+    description: Feature or product card
+    attributes:
+      hover_behavior: [lift, tilt-3d, glow-border, image-zoom, none]
+      click_behavior: [expand, flip, none]
+
+  icon_grid:
+    description: Grid of icons with labels
+    attributes:
+      hover_behavior: [bounce, color, scale, none]
+
+  showcase:
+    description: Interactive product or demo showcase
+    allowed_children: [webgl_canvas, control_panel]
+
+  control_panel:
+    description: UI controls that affect the WebGL scene
+    attributes:
+      controls: [sliders, toggles, color-pickers, preset-buttons]
+      affects: [material, lighting, animation-speed, particle-count]
+
+  gallery:
+    description: Visual gallery
+    attributes:
+      interaction: [hover-preview, click-lightbox-visual, drag-reorder, none]
+
+  testimonial:
+    description: Quote or social proof
+    attributes:
+      animation: [fade, slide, none]
+
+  footer:
+    description: Bottom section
+    attributes:
+      style: [minimal, detailed]
+
+global_attributes:
+  palette:
+    - deep-navy-gold
+    - black-electric-blue
+    - warm-earth
+    - monochrome-accent
+    - pastel-dream
+    - neon-cyber
+    - forest-green-cream
+    - sunset-orange-purple
+
+  mood:
+    - calm-refined
+    - energetic-bold
+    - mysterious-dark
+    - playful-light
+    - luxurious
+    - technical-precise
+    - organic-natural
+
+  required_copy_sets:
+    - ["Aurora", "Discover the night"]
+    - ["Flow", "Move faster"]
+    - ["Lumen", "See clearly"]
+    - ["Nimbus", "Cloud, reimagined"]
+    - ["Vertex", "Precision in motion"]
+    - ["Halo", "Light that follows you"]
+    - ["Quartz", "Clarity engineered"]
+    - ["Drift", "Float above the noise"]
+
+  performance_constraint:
+    - 60fps-target
+    - integrated-graphics-friendly
+    - no-heavy-postprocessing
+    - mobile-conscious
+
+page_templates:
+  - id: classic_hero
+    description: Centered hero with headline, CTA, and background or side WebGL
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline, subheadline, cta_button, webgl_canvas]
+      - type: feature_section
+      - type: footer
+
+  - id: product_showcase
+    description: Large interactive WebGL product with controls
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline, subheadline]
+      - type: showcase
+        children_slots: [webgl_canvas, control_panel]
+      - type: footer
+
+  - id: split_interactive
+    description: Split layout with text on one side and draggable/zoomable WebGL on the other
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline, cta_button, webgl_canvas]
+      - type: feature_section
+      - type: footer
+
+  - id: immersive_canvas
+    description: Full-viewport WebGL with overlaid UI elements that react
+    root: page
+    structure:
+      - type: nav
+      - type: hero
+        children_slots: [headline, cta_button, secondary_button]
+      - type: webgl_canvas
+      - type: footer
