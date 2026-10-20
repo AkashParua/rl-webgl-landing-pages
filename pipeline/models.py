@@ -11,7 +11,8 @@ class ConstraintSpec(BaseModel):
     template_id: str
     mood: str
     palette: str
-    required_copy: list[str]
+    topic: str
+    required_copy: dict[str, str]  # component_type -> chosen text
     performance_constraint: str
     components: list[ComponentSpec]
 

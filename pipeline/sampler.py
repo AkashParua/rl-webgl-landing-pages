@@ -21,7 +21,7 @@ def load_taxonomy(path: Path = TAXONOMY_PATH) -> dict:
 
     Returns:
         Parsed taxonomy dictionary containing component_types,
-        global_attributes, and page_templates.
+        global_attributes, topics, and page_templates.
     """
     with open(path) as f:
         return yaml.safe_load(f)
@@ -42,6 +42,14 @@ def _sample_attributes(rng: random.Random, attr_def: dict) -> dict:
         if isinstance(choices, list) and choices:
             sampled[key] = rng.choice(choices)
     return sampled
+
+def _collect_component_types(components: list[ComponentSpec]) -> set[str]:
+    """Recursively collect all component types present in the tree."""
+    types = set()
+    for comp in components:
+        types.add(comp.type)
+        types.update(_collect_component_types(comp.children))
+    return types
 
 def _build_component(
     rng: random.Random,
@@ -82,8 +90,8 @@ def sample_spec(seed: int, taxonomy: dict | None = None) -> ConstraintSpec:
             taxonomy.yaml is loaded.
 
     Returns:
-        A ConstraintSpec containing global attributes and a tree of
-        components matching one of the page templates.
+        A ConstraintSpec containing global attributes, a topic, required
+        copy mapped to component types, and a tree of components.
     """
     if taxonomy is None:
         taxonomy = load_taxonomy()
@@ -93,12 +101,10 @@ def sample_spec(seed: int, taxonomy: dict | None = None) -> ConstraintSpec:
     # Global attributes
     mood = rng.choice(taxonomy["global_attributes"]["mood"])
     palette = rng.choice(taxonomy["global_attributes"]["palette"])
-    required_copy = rng.choice(taxonomy["global_attributes"]["required_copy_sets"])
     performance = rng.choice(taxonomy["global_attributes"]["performance_constraint"])
 
-    # Pick a page template
+    # Pick a page template and build components
     template = rng.choice(taxonomy["page_templates"])
-
     components = []
     for item in template["structure"]:
         comp = _build_component(
@@ -109,10 +115,22 @@ def sample_spec(seed: int, taxonomy: dict | None = None) -> ConstraintSpec:
         )
         components.append(comp)
 
+    # Sample topic and required copy based on components present
+    topics = taxonomy.get("topics", {})
+    topic_name = rng.choice(list(topics.keys())) if topics else "generic"
+    topic_texts = topics.get(topic_name, {})
+
+    present_types = _collect_component_types(components)
+    required_copy = {}
+    for comp_type in present_types:
+        if comp_type in topic_texts and topic_texts[comp_type]:
+            required_copy[comp_type] = rng.choice(topic_texts[comp_type])
+
     return ConstraintSpec(
         template_id=template["id"],
         mood=mood,
         palette=palette,
+        topic=topic_name,
         required_copy=required_copy,
         performance_constraint=performance,
         components=components,
