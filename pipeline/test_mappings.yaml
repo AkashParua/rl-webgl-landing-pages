@@ -2,6 +2,8 @@
 # Stage 1 (structure) is derived from the template tree.
 # Stage 2 (component) uses the entries below.
 # Stage 3 (content) uses spec.required_copy + data-component selectors.
+#
+# Selector convention: every component must emit data-component="<type>"
 
 selector: '[data-component="{type}"]'
 
@@ -10,44 +12,48 @@ components:
     presence: true
     attributes:
       hover_behavior:
-        underline: { action: hover, note: "underline appears" }
-        color-shift: { action: hover, note: "color changes" }
-        scale: { action: hover, note: "scale changes" }
-        glow: { action: hover, note: "glow appears" }
+        underline: { action: hover, note: "underline appears on nav item" }
+        color-shift: { action: hover, note: "color changes on hover" }
+        scale: { action: hover, note: "item scales on hover" }
+        glow: { action: hover, note: "glow appears on hover" }
 
   headline:
     presence: true
     attributes:
       animation:
-        fade-in: { action: wait, note: "fades in" }
-        slide-up: { action: wait, note: "slides up" }
-        typewriter: { action: wait, note: "typewriter effect" }
+        fade-in: { action: wait, note: "headline fades in" }
+        slide-up: { action: wait, note: "headline slides up" }
+        typewriter: { action: wait, note: "typewriter effect runs" }
         letter-stagger: { action: wait, note: "letters stagger in" }
 
   subheadline:
     presence: true
+    attributes:
+      animation:
+        fade-in-delayed: { action: wait, note: "subheadline fades in after delay" }
+        slide-up: { action: wait, note: "subheadline slides up" }
 
   cta_button:
     presence: true
     attributes:
       hover_behavior:
-        scale-up: { action: hover, note: "scales up" }
-        glow: { action: hover, note: "glows" }
-        color-shift: { action: hover, note: "color shifts" }
-        underline-sweep: { action: hover, note: "underline sweeps" }
-        particle-burst: { action: hover, note: "particles appear" }
-        magnetic: { action: hover, note: "moves toward cursor" }
+        scale-up: { action: hover, note: "button scales up" }
+        glow: { action: hover, note: "button glows" }
+        color-shift: { action: hover, note: "button color shifts" }
+        underline-sweep: { action: hover, note: "underline sweeps across" }
+        particle-burst: { action: hover, note: "particles emit on hover" }
+        magnetic: { action: hover, note: "button moves toward cursor" }
       click_behavior:
-        ripple: { action: click, note: "ripple appears" }
-        toggle-state: { action: click, note: "state toggles" }
+        ripple: { action: click, note: "ripple effect appears" }
+        toggle-state: { action: click, note: "button state toggles" }
         cycle-palette: { action: click, note: "palette cycles" }
-        spawn-element: { action: click, note: "element spawns" }
-        trigger-animation: { action: click, note: "animation triggers" }
-        navigate-section: { action: click, note: "scrolls or navigates" }
+        spawn-element: { action: click, note: "new element spawns" }
+        trigger-animation: { action: click, note: "animation is triggered" }
+        navigate-section: { action: click, note: "navigates or scrolls to section" }
       right_click_behavior:
         show-tooltip: { action: right-click, note: "tooltip appears" }
-        reset: { action: right-click, note: "resets" }
-        secondary-action: { action: right-click, note: "secondary action" }
+        reset: { action: right-click, note: "scene or state resets" }
+        secondary-action: { action: right-click, note: "secondary action fires" }
 
   secondary_button:
     presence: true
@@ -55,7 +61,7 @@ components:
       hover_behavior:
         opacity: { action: hover, note: "opacity changes" }
         underline: { action: hover, note: "underline appears" }
-        scale: { action: hover, note: "scales" }
+        scale: { action: hover, note: "button scales" }
       click_behavior:
         scroll-to: { action: click, note: "scrolls to target" }
         open-modal-visual: { action: click, note: "modal visual appears" }
@@ -64,54 +70,54 @@ components:
     presence: true
     attributes:
       drag_behavior:
-        rotate-object: { action: drag, note: "object rotates" }
+        rotate-object: { action: drag, note: "main object rotates" }
         pan-camera: { action: drag, note: "camera pans" }
-        orbit-controls: { action: drag, note: "orbit controls work" }
-        scrub-timeline: { action: drag, note: "timeline scrubs" }
+        orbit-controls: { action: drag, note: "orbit controls respond" }
+        scrub-timeline: { action: drag, note: "timeline is scrubbed" }
       zoom_behavior:
-        dolly-camera: { action: wheel, note: "camera dollies" }
+        dolly-camera: { action: wheel, note: "camera dollies in/out" }
         scale-focal: { action: wheel, note: "focal object scales" }
-        reveal-detail: { action: wheel, note: "detail is revealed" }
+        reveal-detail: { action: wheel, note: "detail layer is revealed" }
       hover_behavior:
         highlight-object: { action: hover, note: "object highlights" }
         tooltip: { action: hover, note: "tooltip appears" }
-        slow-motion: { action: hover, note: "motion slows" }
+        slow-motion: { action: hover, note: "animation slows" }
       click_behavior:
-        select-object: { action: click, note: "object selected" }
-        explode-view: { action: click, note: "explode view" }
+        select-object: { action: click, note: "object becomes selected" }
+        explode-view: { action: click, note: "explode view activates" }
         change-material: { action: click, note: "material changes" }
         toggle-wireframe: { action: click, note: "wireframe toggles" }
       right_click_behavior:
         reset-camera: { action: right-click, note: "camera resets" }
-        context-visual: { action: right-click, note: "context visual" }
+        context-visual: { action: right-click, note: "context visual appears" }
 
   card:
     presence: true
     attributes:
       hover_behavior:
-        lift: { action: hover, note: "lifts" }
-        tilt-3d: { action: hover, note: "tilts in 3d" }
+        lift: { action: hover, note: "card lifts" }
+        tilt-3d: { action: hover, note: "card tilts in 3D" }
         glow-border: { action: hover, note: "border glows" }
         image-zoom: { action: hover, note: "image zooms" }
       click_behavior:
-        expand: { action: click, note: "expands" }
-        flip: { action: click, note: "flips" }
+        expand: { action: click, note: "card expands" }
+        flip: { action: click, note: "card flips" }
 
   icon_grid:
     presence: true
     attributes:
       hover_behavior:
-        bounce: { action: hover, note: "bounces" }
-        color: { action: hover, note: "color changes" }
-        scale: { action: hover, note: "scales" }
+        bounce: { action: hover, note: "icon bounces" }
+        color: { action: hover, note: "icon color changes" }
+        scale: { action: hover, note: "icon scales" }
 
   gallery:
     presence: true
     attributes:
       interaction:
         hover-preview: { action: hover, note: "preview appears" }
-        click-lightbox-visual: { action: click, note: "lightbox visual" }
-        drag-reorder: { action: drag, note: "reorders" }
+        click-lightbox-visual: { action: click, note: "lightbox visual opens" }
+        drag-reorder: { action: drag, note: "items can be reordered" }
 
   feature_section:
     presence: true
@@ -133,3 +139,6 @@ components:
 
   text_block:
     presence: true
+    attributes:
+      animation:
+        fade-in-on-scroll: { action: scroll, note: "fades in when scrolled into view" }
