@@ -1,116 +1,267 @@
 # Exhaustive hierarchical taxonomy for WebGL landing page tasks
 # Components can nest; attributes are sampled per component.
+# Comments explain the intended meaning of each component, attribute, and value.
 
 component_types:
   page:
-    description: Root container
+    description: Root container for the entire landing page
     allowed_children: [hero, feature_section, showcase, gallery, testimonial, footer, nav]
 
   nav:
-    description: Top navigation
+    description: Top navigation bar
     attributes:
-      style: [minimal, floating, glassmorphic, bold]
-      hover_behavior: [underline, color-shift, scale, glow, none]
-      mobile_behavior: [hamburger, none]
+      # Visual style of the navigation
+      style:
+        - minimal          # Simple text links, little decoration
+        - floating         # Nav appears to float over content
+        - glassmorphic     # Frosted-glass / backdrop-blur look
+        - bold             # High-contrast, strong typography
+      # What happens when hovering a nav item
+      hover_behavior:
+        - underline
+        - color-shift
+        - scale
+        - glow
+        - none
+      # How the nav behaves on small screens
+      mobile_behavior:
+        - hamburger        # Collapses into a hamburger menu
+        - none
 
   hero:
     description: Primary above-the-fold section
     allowed_children: [headline, subheadline, cta_button, secondary_button, webgl_canvas, background_effect]
     attributes:
-      layout: [centered, split-left, split-right, full-bleed]
-      vertical_align: [center, top, bottom]
+      # Overall layout of the hero content
+      layout:
+        - centered         # Everything stacked in the middle
+        - split-left       # Text on the left, visual on the right
+        - split-right      # Text on the right, visual on the left
+        - full-bleed       # Edge-to-edge visual with overlaid text
+      vertical_align:
+        - center
+        - top
+        - bottom
 
   headline:
     description: Main title text
     attributes:
-      text_style: [bold-sans, elegant-serif, mono, gradient-fill]
-      animation: [fade-in, slide-up, typewriter, letter-stagger, none]
+      text_style:
+        - bold-sans
+        - elegant-serif
+        - mono
+        - gradient-fill    # Text filled with a gradient
+      # Entrance animation for the headline
+      animation:
+        - fade-in
+        - slide-up
+        - typewriter
+        - letter-stagger   # Letters animate in one by one
+        - none
 
   subheadline:
-    description: Supporting line under headline
+    description: Supporting line under the headline
     attributes:
-      animation: [fade-in-delayed, slide-up, none]
+      animation:
+        - fade-in-delayed
+        - slide-up
+        - none
 
   cta_button:
     description: Primary call-to-action button (must be clickable and reactive)
     attributes:
-      label_style: [solid, outline, gradient, glass]
-      hover_behavior: [scale-up, glow, color-shift, underline-sweep, particle-burst, magnetic]
-      click_behavior: [ripple, toggle-state, cycle-palette, spawn-element, trigger-animation, navigate-section]
-      right_click_behavior: [show-tooltip, reset, secondary-action, none]
+      label_style:
+        - solid
+        - outline
+        - gradient
+        - glass
+      # Visual reaction on hover
+      hover_behavior:
+        - scale-up
+        - glow
+        - color-shift
+        - underline-sweep
+        - particle-burst
+        - magnetic         # Button follows cursor slightly
+      # Action performed on left click
+      click_behavior:
+        - ripple
+        - toggle-state
+        - cycle-palette
+        - spawn-element
+        - trigger-animation
+        - navigate-section
+      # Action performed on right click
+      right_click_behavior:
+        - show-tooltip
+        - reset
+        - secondary-action
+        - none
 
   secondary_button:
-    description: Secondary button
+    description: Secondary / less prominent button
     attributes:
-      hover_behavior: [opacity, underline, scale, none]
-      click_behavior: [scroll-to, open-modal-visual, none]
+      hover_behavior:
+        - opacity
+        - underline
+        - scale
+        - none
+      click_behavior:
+        - scroll-to
+        - open-modal-visual
+        - none
 
   webgl_canvas:
-    description: Main WebGL / Three.js scene
+    description: Main WebGL / Three.js interactive scene
     attributes:
-      scene_type: [product-orbit, abstract-particles, geometric-morph, liquid-blob, floating-cards, terrain, crystal]
-      animation_style: [gentle-ambient-loop, triggered-burst, continuous-flow, physics-idle, staggered-reveal, morphing]
-      motion_budget: [minimal, gentle, dynamic, intense]
-      drag_behavior: [rotate-object, pan-camera, orbit-controls, scrub-timeline, none]
-      zoom_behavior: [dolly-camera, scale-focal, reveal-detail, none]
-      hover_behavior: [highlight-object, tooltip, slow-motion, none]
-      click_behavior: [select-object, explode-view, change-material, toggle-wireframe, none]
-      right_click_behavior: [reset-camera, context-visual, none]
+      # High-level type of 3D scene to create
+      scene_type:
+        - product-orbit      # Object rotating / orbitable in center
+        - abstract-particles
+        - geometric-morph
+        - liquid-blob
+        - floating-cards
+        - terrain
+        - crystal
+      # Overall character of the motion
+      animation_style:
+        - gentle-ambient-loop
+        - triggered-burst
+        - continuous-flow
+        - physics-idle
+        - staggered-reveal
+        - morphing
+      # How much motion is allowed
+      motion_budget:
+        - minimal
+        - gentle
+        - dynamic
+        - intense
+      # What dragging does
+      drag_behavior:
+        - rotate-object
+        - pan-camera
+        - orbit-controls
+        - scrub-timeline
+        - none
+      # What scroll / pinch zoom does
+      zoom_behavior:
+        - dolly-camera
+        - scale-focal
+        - reveal-detail
+        - none
+      hover_behavior:
+        - highlight-object
+        - tooltip
+        - slow-motion
+        - none
+      click_behavior:
+        - select-object
+        - explode-view
+        - change-material
+        - toggle-wireframe
+        - none
+      right_click_behavior:
+        - reset-camera
+        - context-visual
+        - none
 
   background_effect:
-    description: Full-section background animation
+    description: Full-section background animation layer
     attributes:
-      type: [gradient-shift, particle-field, noise-flow, grid, none]
-      intensity: [subtle, medium]
+      type:
+        - gradient-shift
+        - particle-field
+        - noise-flow
+        - grid
+        - none
+      intensity:
+        - subtle
+        - medium
 
   feature_section:
-    description: Content section below hero
+    description: Content section that appears below the hero
     allowed_children: [text_block, icon_grid, webgl_canvas, card]
     attributes:
-      layout: [three-column, alternating, centered]
+      layout:
+        - three-column
+        - alternating
+        - centered
 
   text_block:
-    description: Paragraph or feature description
+    description: Paragraph or feature description text
     attributes:
-      animation: [fade-in-on-scroll, none]
+      animation:
+        - fade-in-on-scroll
+        - none
 
   card:
     description: Feature or product card
     attributes:
-      hover_behavior: [lift, tilt-3d, glow-border, image-zoom, none]
-      click_behavior: [expand, flip, none]
+      hover_behavior:
+        - lift
+        - tilt-3d
+        - glow-border
+        - image-zoom
+        - none
+      click_behavior:
+        - expand
+        - flip
+        - none
 
   icon_grid:
-    description: Grid of icons with labels
+    description: Grid of icons with short labels
     attributes:
-      hover_behavior: [bounce, color, scale, none]
+      hover_behavior:
+        - bounce
+        - color
+        - scale
+        - none
 
   showcase:
-    description: Interactive product or demo showcase
+    description: Interactive product or demo showcase area
     allowed_children: [webgl_canvas, control_panel]
 
   control_panel:
-    description: UI controls that affect the WebGL scene
+    description: UI controls that affect the WebGL scene in real time
     attributes:
-      controls: [sliders, toggles, color-pickers, preset-buttons]
-      affects: [material, lighting, animation-speed, particle-count]
+      controls:
+        - sliders
+        - toggles
+        - color-pickers
+        - preset-buttons
+      affects:
+        - material
+        - lighting
+        - animation-speed
+        - particle-count
 
   gallery:
-    description: Visual gallery
+    description: Visual gallery of images or cards
     attributes:
-      interaction: [hover-preview, click-lightbox-visual, drag-reorder, none]
+      interaction:
+        - hover-preview
+        - click-lightbox-visual
+        - drag-reorder
+        - none
 
   testimonial:
-    description: Quote or social proof
+    description: Quote or social-proof block
     attributes:
-      animation: [fade, slide, none]
+      animation:
+        - fade
+        - slide
+        - none
 
   footer:
-    description: Bottom section
+    description: Bottom section of the page
     attributes:
-      style: [minimal, detailed]
+      style:
+        - minimal
+        - detailed
 
 global_attributes:
+  # Color palettes the page should primarily use
   palette:
     - deep-navy-gold
     - black-electric-blue
@@ -121,6 +272,7 @@ global_attributes:
     - forest-green-cream
     - sunset-orange-purple
 
+  # Overall emotional tone of the page
   mood:
     - calm-refined
     - energetic-bold
@@ -130,6 +282,7 @@ global_attributes:
     - technical-precise
     - organic-natural
 
+  # Sets of text strings that must appear on the page
   required_copy_sets:
     - ["Aurora", "Discover the night"]
     - ["Flow", "Move faster"]
@@ -140,6 +293,7 @@ global_attributes:
     - ["Quartz", "Clarity engineered"]
     - ["Drift", "Float above the noise"]
 
+  # Performance / technical constraints the scene must respect
   performance_constraint:
     - 60fps-target
     - integrated-graphics-friendly
