@@ -1,9 +1,12 @@
 # Test mappings for generated Playwright suites.
-# Stage 1 (structure) is derived from the template tree.
-# Stage 2 (component) uses the entries below.
-# Stage 3 (content) uses spec.required_copy + data-component selectors.
+# Each attribute value can declare an `assert` block that the generator turns into real checks.
 #
-# Selector convention: every component must emit data-component="<type>"
+# assert.type:
+#   style_changes     – computed style property must change and optionally contain a substring
+#   attribute_toggles – an attribute value must change
+#   element_appears   – a selector must become visible after the action
+#   class_added       – a class must be present after the action
+#   visible           – fallback: element stays visible (weak)
 
 selector: '[data-component="{type}"]'
 
@@ -12,133 +15,245 @@ components:
     presence: true
     attributes:
       hover_behavior:
-        underline: { action: hover, note: "underline appears on nav item" }
-        color-shift: { action: hover, note: "color changes on hover" }
-        scale: { action: hover, note: "item scales on hover" }
-        glow: { action: hover, note: "glow appears on hover" }
+        underline:
+          action: hover
+          assert: { type: style_changes, property: text-decoration }
+        color-shift:
+          action: hover
+          assert: { type: style_changes, property: color }
+        scale:
+          action: hover
+          assert: { type: style_changes, property: transform, contains: "scale" }
+        glow:
+          action: hover
+          assert: { type: style_changes, property: box-shadow }
 
   headline:
     presence: true
     attributes:
       animation:
-        fade-in: { action: wait, note: "headline fades in" }
-        slide-up: { action: wait, note: "headline slides up" }
-        typewriter: { action: wait, note: "typewriter effect runs" }
-        letter-stagger: { action: wait, note: "letters stagger in" }
+        fade-in:
+          action: wait
+          assert: { type: visible }
+        slide-up:
+          action: wait
+          assert: { type: style_changes, property: transform }
+        typewriter:
+          action: wait
+          assert: { type: visible }
+        letter-stagger:
+          action: wait
+          assert: { type: visible }
 
   subheadline:
     presence: true
     attributes:
       animation:
-        fade-in-delayed: { action: wait, note: "subheadline fades in after delay" }
-        slide-up: { action: wait, note: "subheadline slides up" }
+        fade-in-delayed:
+          action: wait
+          assert: { type: visible }
+        slide-up:
+          action: wait
+          assert: { type: style_changes, property: transform }
 
   cta_button:
     presence: true
     attributes:
       hover_behavior:
-        scale-up: { action: hover, note: "button scales up" }
-        glow: { action: hover, note: "button glows" }
-        color-shift: { action: hover, note: "button color shifts" }
-        underline-sweep: { action: hover, note: "underline sweeps across" }
-        particle-burst: { action: hover, note: "particles emit on hover" }
-        magnetic: { action: hover, note: "button moves toward cursor" }
+        scale-up:
+          action: hover
+          assert: { type: style_changes, property: transform, contains: "scale" }
+        glow:
+          action: hover
+          assert: { type: style_changes, property: box-shadow }
+        color-shift:
+          action: hover
+          assert: { type: style_changes, property: background-color }
+        underline-sweep:
+          action: hover
+          assert: { type: style_changes, property: text-decoration }
+        particle-burst:
+          action: hover
+          assert: { type: element_appears, selector: "[data-particle], .particle, .particles" }
+        magnetic:
+          action: hover
+          assert: { type: style_changes, property: transform }
       click_behavior:
-        ripple: { action: click, note: "ripple effect appears" }
-        toggle-state: { action: click, note: "button state toggles" }
-        cycle-palette: { action: click, note: "palette cycles" }
-        spawn-element: { action: click, note: "new element spawns" }
-        trigger-animation: { action: click, note: "animation is triggered" }
-        navigate-section: { action: click, note: "navigates or scrolls to section" }
+        ripple:
+          action: click
+          assert: { type: element_appears, selector: "[data-ripple], .ripple" }
+        toggle-state:
+          action: click
+          assert: { type: attribute_toggles, name: "aria-pressed" }
+        cycle-palette:
+          action: click
+          assert: { type: style_changes, property: background-color }
+        spawn-element:
+          action: click
+          assert: { type: element_appears, selector: "[data-spawned], .spawned" }
+        trigger-animation:
+          action: click
+          assert: { type: class_added, class: "animating" }
+        navigate-section:
+          action: click
+          assert: { type: visible }
       right_click_behavior:
-        show-tooltip: { action: right-click, note: "tooltip appears" }
-        reset: { action: right-click, note: "scene or state resets" }
-        secondary-action: { action: right-click, note: "secondary action fires" }
+        show-tooltip:
+          action: right-click
+          assert: { type: element_appears, selector: "[role=tooltip], .tooltip, [data-tooltip]" }
+        reset:
+          action: right-click
+          assert: { type: visible }
+        secondary-action:
+          action: right-click
+          assert: { type: visible }
 
   secondary_button:
     presence: true
     attributes:
       hover_behavior:
-        opacity: { action: hover, note: "opacity changes" }
-        underline: { action: hover, note: "underline appears" }
-        scale: { action: hover, note: "button scales" }
+        opacity:
+          action: hover
+          assert: { type: style_changes, property: opacity }
+        underline:
+          action: hover
+          assert: { type: style_changes, property: text-decoration }
+        scale:
+          action: hover
+          assert: { type: style_changes, property: transform, contains: "scale" }
       click_behavior:
-        scroll-to: { action: click, note: "scrolls to target" }
-        open-modal-visual: { action: click, note: "modal visual appears" }
+        scroll-to:
+          action: click
+          assert: { type: visible }
+        open-modal-visual:
+          action: click
+          assert: { type: element_appears, selector: "[role=dialog], .modal, [data-modal]" }
 
   webgl_canvas:
     presence: true
     attributes:
       drag_behavior:
-        rotate-object: { action: drag, note: "main object rotates" }
-        pan-camera: { action: drag, note: "camera pans" }
-        orbit-controls: { action: drag, note: "orbit controls respond" }
-        scrub-timeline: { action: drag, note: "timeline is scrubbed" }
+        rotate-object:
+          action: drag
+          assert: { type: visible }
+        pan-camera:
+          action: drag
+          assert: { type: visible }
+        orbit-controls:
+          action: drag
+          assert: { type: visible }
+        scrub-timeline:
+          action: drag
+          assert: { type: visible }
       zoom_behavior:
-        dolly-camera: { action: wheel, note: "camera dollies in/out" }
-        scale-focal: { action: wheel, note: "focal object scales" }
-        reveal-detail: { action: wheel, note: "detail layer is revealed" }
+        dolly-camera:
+          action: wheel
+          assert: { type: visible }
+        scale-focal:
+          action: wheel
+          assert: { type: visible }
+        reveal-detail:
+          action: wheel
+          assert: { type: visible }
       hover_behavior:
-        highlight-object: { action: hover, note: "object highlights" }
-        tooltip: { action: hover, note: "tooltip appears" }
-        slow-motion: { action: hover, note: "animation slows" }
+        highlight-object:
+          action: hover
+          assert: { type: visible }
+        tooltip:
+          action: hover
+          assert: { type: element_appears, selector: "[role=tooltip], .tooltip" }
+        slow-motion:
+          action: hover
+          assert: { type: visible }
       click_behavior:
-        select-object: { action: click, note: "object becomes selected" }
-        explode-view: { action: click, note: "explode view activates" }
-        change-material: { action: click, note: "material changes" }
-        toggle-wireframe: { action: click, note: "wireframe toggles" }
+        select-object:
+          action: click
+          assert: { type: class_added, class: "selected" }
+        explode-view:
+          action: click
+          assert: { type: visible }
+        change-material:
+          action: click
+          assert: { type: visible }
+        toggle-wireframe:
+          action: click
+          assert: { type: class_added, class: "wireframe" }
       right_click_behavior:
-        reset-camera: { action: right-click, note: "camera resets" }
-        context-visual: { action: right-click, note: "context visual appears" }
+        reset-camera:
+          action: right-click
+          assert: { type: visible }
+        context-visual:
+          action: right-click
+          assert: { type: element_appears, selector: "[data-context], .context-menu" }
 
   card:
     presence: true
     attributes:
       hover_behavior:
-        lift: { action: hover, note: "card lifts" }
-        tilt-3d: { action: hover, note: "card tilts in 3D" }
-        glow-border: { action: hover, note: "border glows" }
-        image-zoom: { action: hover, note: "image zooms" }
+        lift:
+          action: hover
+          assert: { type: style_changes, property: transform }
+        tilt-3d:
+          action: hover
+          assert: { type: style_changes, property: transform }
+        glow-border:
+          action: hover
+          assert: { type: style_changes, property: box-shadow }
+        image-zoom:
+          action: hover
+          assert: { type: style_changes, property: transform }
       click_behavior:
-        expand: { action: click, note: "card expands" }
-        flip: { action: click, note: "card flips" }
+        expand:
+          action: click
+          assert: { type: class_added, class: "expanded" }
+        flip:
+          action: click
+          assert: { type: style_changes, property: transform }
 
   icon_grid:
     presence: true
     attributes:
       hover_behavior:
-        bounce: { action: hover, note: "icon bounces" }
-        color: { action: hover, note: "icon color changes" }
-        scale: { action: hover, note: "icon scales" }
+        bounce:
+          action: hover
+          assert: { type: style_changes, property: transform }
+        color:
+          action: hover
+          assert: { type: style_changes, property: color }
+        scale:
+          action: hover
+          assert: { type: style_changes, property: transform, contains: "scale" }
 
   gallery:
     presence: true
     attributes:
       interaction:
-        hover-preview: { action: hover, note: "preview appears" }
-        click-lightbox-visual: { action: click, note: "lightbox visual opens" }
-        drag-reorder: { action: drag, note: "items can be reordered" }
+        hover-preview:
+          action: hover
+          assert: { type: element_appears, selector: "[data-preview], .preview" }
+        click-lightbox-visual:
+          action: click
+          assert: { type: element_appears, selector: "[data-lightbox], .lightbox" }
+        drag-reorder:
+          action: drag
+          assert: { type: visible }
 
   feature_section:
     presence: true
-
   showcase:
     presence: true
-
   control_panel:
     presence: true
-
   testimonial:
     presence: true
-
   footer:
     presence: true
-
   background_effect:
     presence: true
-
   text_block:
     presence: true
     attributes:
       animation:
-        fade-in-on-scroll: { action: scroll, note: "fades in when scrolled into view" }
+        fade-in-on-scroll:
+          action: scroll
+          assert: { type: visible }
