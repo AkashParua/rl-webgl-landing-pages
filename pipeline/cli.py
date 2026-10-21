@@ -1,15 +1,11 @@
 """Pipeline CLI.
 
 Stage 1: generate-tasks
-  Samples ConstraintSpecs and writes, for each task:
-    - spec.json
-    - instruction.md   (agent-facing prompt)
-    - tests/generated.spec.ts
-    - tests/test.sh
-    - minimal task.toml
+  Samples ConstraintSpecs and writes a valid Harbor bundle per task
+  using shared images (no per-task image builds).
 
 Stage 3: evaluate
-  Builds shared Docker images and runs Playwright tests against a submission.
+  Runs the shared page + verifier containers against a submission.
 """
 
 import argparse
@@ -34,13 +30,11 @@ def _write_task(spec, seed: int, out_dir: Path) -> Path:
     task_dir = out_dir / name
     task_dir.mkdir(parents=True, exist_ok=True)
 
-    # spec
+    # spec + instruction
     (task_dir / "spec.json").write_text(spec.model_dump_json(indent=2))
-
-    # instruction / prompt
     (task_dir / "instruction.md").write_text(render_instruction(spec))
 
-    # Playwright tests + test.sh
+    # tests
     tests_dir = task_dir / "tests"
     tests_dir.mkdir(exist_ok=True)
     (tests_dir / "generated.spec.ts").write_text(generate_playwright_ts(spec))
@@ -48,7 +42,22 @@ def _write_task(spec, seed: int, out_dir: Path) -> Path:
         shutil.copy(TEST_SH_SRC, tests_dir / "test.sh")
         (tests_dir / "test.sh").chmod(0o755)
 
-    # minimal task.toml
+    # environment — note only, shared image is used
+    env_dir = task_dir / "environment"
+    env_dir.mkdir(exist_ok=True)
+    (env_dir / "Dockerfile").write_text(
+        "# Shared image is used at runtime (rl-page).\n"
+        "# This file exists only to satisfy the Harbor layout.\n"
+        "FROM nginx:alpine\n"
+        "COPY submission /usr/share/nginx/html\n"
+    )
+    (env_dir / "README.md").write_text(
+        "This task uses the shared `rl-page` image.\n"
+        "The harness mounts `submission/` over the web root.\n"
+        "No per-task image build is required.\n"
+    )
+
+    # task.toml — points at shared images + do-not-modify
     toml = f"""schema_version = "2.0"
 
 [task]
@@ -60,7 +69,16 @@ seed = {seed}
 template_id = "{spec.template_id}"
 topic = "{spec.topic}"
 
+# Files the agent must not modify
+do_not_modify = [
+  "tests/",
+  "task.toml",
+  "spec.json",
+  "environment/",
+]
+
 [environment]
+docker_image = "rl-page"
 cpus = 1
 memory_mb = 2048
 network_mode = "no-network"
@@ -71,11 +89,16 @@ timeout_sec = 600
 [verifier]
 timeout_sec = 180
 environment_mode = "separate"
+
+[verifier.environment]
+docker_image = "rl-verifier"
+cpus = 1
+memory_mb = 2048
+network_mode = "no-network"
 """
     (task_dir / "task.toml").write_text(toml)
 
-    # placeholder dirs
-    (task_dir / "environment").mkdir(exist_ok=True)
+    # remaining dirs
     (task_dir / "solution").mkdir(exist_ok=True)
     (task_dir / "submission").mkdir(exist_ok=True)
 
@@ -101,7 +124,6 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
     ensure_images()
     task_dir = Path(args.task_dir)
     if not task_dir.exists():
-        # try under tasks/
         task_dir = Path("tasks") / args.task_dir
     code = evaluate_task(task_dir)
     raise SystemExit(code)
@@ -110,7 +132,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p_gen = sub.add_parser("generate-tasks", help="Sample specs and emit prompts + Playwright tests")
+    p_gen = sub.add_parser("generate-tasks", help="Sample specs and emit Harbor bundles")
     p_gen.add_argument("--count", "-n", type=int, default=1)
     p_gen.add_argument("--seed", type=int, default=42)
     p_gen.add_argument("--out-dir", default="tasks")
