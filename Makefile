@@ -1,4 +1,4 @@
-.PHONY: install pipeline quality score test lint generate-tasks
+.PHONY: install pipeline quality score test lint generate-tasks evaluate
 
 # --- Environment (uv) ---
 install:
@@ -10,6 +10,9 @@ generate-tasks:
 
 pipeline:
 	uv run python -m pipeline generate-tasks --count 50 --seed 42
+
+evaluate:
+	uv run python -m pipeline evaluate $(TASK)
 
 quality:
 	uv run python -m quality.run_gates
