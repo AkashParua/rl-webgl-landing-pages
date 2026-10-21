@@ -1,4 +1,4 @@
-.PHONY: install pipeline quality score test lint generate-tasks evaluate
+.PHONY: install pipeline quality score test lint generate-tasks generate-page evaluate
 
 # --- Environment (uv) ---
 install:
@@ -7,6 +7,9 @@ install:
 # --- Pipeline targets ---
 generate-tasks:
 	uv run python -m pipeline generate-tasks --count $(or $(COUNT),1) --seed $(or $(SEED),42)
+
+generate-page:
+	uv run python -m pipeline generate-page $(TASK) --mode $(or $(MODE),manual)
 
 pipeline:
 	uv run python -m pipeline generate-tasks --count 50 --seed 42
