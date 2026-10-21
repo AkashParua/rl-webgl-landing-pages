@@ -1,11 +1,8 @@
 """Pipeline CLI.
 
-Stage 1: generate-tasks
-  Samples ConstraintSpecs and writes a valid Harbor bundle per task
-  using shared images (no per-task image builds).
-
-Stage 3: evaluate
-  Runs the shared page + verifier containers against a submission.
+generate-tasks  – sample specs, write Harbor bundles
+generate-page   – print prompt (manual) or call LLM to write index.html
+evaluate        – run Playwright tests against a submission
 """
 
 import argparse
@@ -17,6 +14,7 @@ from .sampler import sample_spec
 from .instruction import render_instruction
 from .test_generator import generate_playwright_ts
 from .evaluate import ensure_images, evaluate_task
+from .generate_page import generate_manual, generate_llm
 
 ROOT = Path(__file__).resolve().parent.parent
 TEST_SH_SRC = ROOT / "docker" / "verifier" / "test.sh"
@@ -25,16 +23,23 @@ def _kebab(template_id: str, topic: str, seed: int) -> str:
     raw = f"{template_id}-{topic}-{seed}"
     return raw.replace("_", "-").lower()
 
+def _resolve_task(task_dir: str) -> Path:
+    p = Path(task_dir)
+    if p.exists():
+        return p
+    alt = Path("tasks") / task_dir
+    if alt.exists():
+        return alt
+    raise SystemExit(f"Task not found: {task_dir}")
+
 def _write_task(spec, seed: int, out_dir: Path) -> Path:
     name = _kebab(spec.template_id, spec.topic, seed)
     task_dir = out_dir / name
     task_dir.mkdir(parents=True, exist_ok=True)
 
-    # spec + instruction
     (task_dir / "spec.json").write_text(spec.model_dump_json(indent=2))
     (task_dir / "instruction.md").write_text(render_instruction(spec))
 
-    # tests
     tests_dir = task_dir / "tests"
     tests_dir.mkdir(exist_ok=True)
     (tests_dir / "generated.spec.ts").write_text(generate_playwright_ts(spec))
@@ -42,7 +47,6 @@ def _write_task(spec, seed: int, out_dir: Path) -> Path:
         shutil.copy(TEST_SH_SRC, tests_dir / "test.sh")
         (tests_dir / "test.sh").chmod(0o755)
 
-    # environment — note only, shared image is used
     env_dir = task_dir / "environment"
     env_dir.mkdir(exist_ok=True)
     (env_dir / "Dockerfile").write_text(
@@ -57,7 +61,6 @@ def _write_task(spec, seed: int, out_dir: Path) -> Path:
         "No per-task image build is required.\n"
     )
 
-    # task.toml — points at shared images + do-not-modify
     toml = f"""schema_version = "2.0"
 
 [task]
@@ -69,7 +72,6 @@ seed = {seed}
 template_id = "{spec.template_id}"
 topic = "{spec.topic}"
 
-# Files the agent must not modify
 do_not_modify = [
   "tests/",
   "task.toml",
@@ -98,7 +100,6 @@ network_mode = "no-network"
 """
     (task_dir / "task.toml").write_text(toml)
 
-    # remaining dirs
     (task_dir / "solution").mkdir(exist_ok=True)
     (task_dir / "submission").mkdir(exist_ok=True)
 
@@ -120,11 +121,23 @@ def cmd_generate_tasks(args: argparse.Namespace) -> None:
     index.write_text(json.dumps({"count": len(created), "tasks": created}, indent=2))
     print(f"\nWrote {len(created)} tasks to {out_dir}")
 
+def cmd_generate_page(args: argparse.Namespace) -> None:
+    task_dir = _resolve_task(args.task_dir)
+    mode = args.mode
+
+    if mode == "manual":
+        print(generate_manual(task_dir))
+        print("\n---\nCopy the above into Claude (or any chat).")
+        print(f"Save the resulting HTML to: {task_dir / 'submission' / 'index.html'}")
+    elif mode == "llm":
+        out = generate_llm(task_dir)
+        print(f"Wrote {out}")
+    else:
+        raise SystemExit(f"Unknown mode: {mode}")
+
 def cmd_evaluate(args: argparse.Namespace) -> None:
     ensure_images()
-    task_dir = Path(args.task_dir)
-    if not task_dir.exists():
-        task_dir = Path("tasks") / args.task_dir
+    task_dir = _resolve_task(args.task_dir)
     code = evaluate_task(task_dir)
     raise SystemExit(code)
 
@@ -138,8 +151,13 @@ def main() -> None:
     p_gen.add_argument("--out-dir", default="tasks")
     p_gen.set_defaults(func=cmd_generate_tasks)
 
-    p_eval = sub.add_parser("evaluate", help="Run Playwright tests against a task submission")
-    p_eval.add_argument("task_dir", help="Path to task directory or task name under tasks/")
+    p_page = sub.add_parser("generate-page", help="Produce index.html via LLM or print prompt")
+    p_page.add_argument("task_dir", help="Task directory or name under tasks/")
+    p_page.add_argument("--mode", choices=["manual", "llm"], default="manual")
+    p_page.set_defaults(func=cmd_generate_page)
+
+    p_eval = sub.add_parser("evaluate", help="Run Playwright tests against a submission")
+    p_eval.add_argument("task_dir", help="Task directory or name under tasks/")
     p_eval.set_defaults(func=cmd_evaluate)
 
     args = parser.parse_args()
