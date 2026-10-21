@@ -5,16 +5,25 @@ Stage 1: generate-tasks
     - spec.json
     - instruction.md   (agent-facing prompt)
     - tests/generated.spec.ts
+    - tests/test.sh
     - minimal task.toml
+
+Stage 3: evaluate
+  Builds shared Docker images and runs Playwright tests against a submission.
 """
 
 import argparse
 import json
+import shutil
 from pathlib import Path
 
 from .sampler import sample_spec
 from .instruction import render_instruction
 from .test_generator import generate_playwright_ts
+from .evaluate import ensure_images, evaluate_task
+
+ROOT = Path(__file__).resolve().parent.parent
+TEST_SH_SRC = ROOT / "docker" / "verifier" / "test.sh"
 
 def _kebab(template_id: str, topic: str, seed: int) -> str:
     raw = f"{template_id}-{topic}-{seed}"
@@ -31,10 +40,13 @@ def _write_task(spec, seed: int, out_dir: Path) -> Path:
     # instruction / prompt
     (task_dir / "instruction.md").write_text(render_instruction(spec))
 
-    # Playwright tests
+    # Playwright tests + test.sh
     tests_dir = task_dir / "tests"
     tests_dir.mkdir(exist_ok=True)
     (tests_dir / "generated.spec.ts").write_text(generate_playwright_ts(spec))
+    if TEST_SH_SRC.exists():
+        shutil.copy(TEST_SH_SRC, tests_dir / "test.sh")
+        (tests_dir / "test.sh").chmod(0o755)
 
     # minimal task.toml
     toml = f"""schema_version = "2.0"
@@ -85,6 +97,15 @@ def cmd_generate_tasks(args: argparse.Namespace) -> None:
     index.write_text(json.dumps({"count": len(created), "tasks": created}, indent=2))
     print(f"\nWrote {len(created)} tasks to {out_dir}")
 
+def cmd_evaluate(args: argparse.Namespace) -> None:
+    ensure_images()
+    task_dir = Path(args.task_dir)
+    if not task_dir.exists():
+        # try under tasks/
+        task_dir = Path("tasks") / args.task_dir
+    code = evaluate_task(task_dir)
+    raise SystemExit(code)
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -94,6 +115,10 @@ def main() -> None:
     p_gen.add_argument("--seed", type=int, default=42)
     p_gen.add_argument("--out-dir", default="tasks")
     p_gen.set_defaults(func=cmd_generate_tasks)
+
+    p_eval = sub.add_parser("evaluate", help="Run Playwright tests against a task submission")
+    p_eval.add_argument("task_dir", help="Path to task directory or task name under tasks/")
+    p_eval.set_defaults(func=cmd_evaluate)
 
     args = parser.parse_args()
     args.func(args)
